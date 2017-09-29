@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package PAXM;
+
+message PaxmMessage {
+	MessageType type = 1;
+	bytes payload = 2;
+	int32 crc32 = 3;
+}
+
+enum MessageType {
+	ISSUANCE = 0;
+	TRANSFER = 1;
+	EVENT = 2;
+}
+
+enum ProductEventType {
+	NONE = 0;
+	SERVICE = 1;
+	REPAIR = 2;
+	INSURANCE = 3;
+	LOGISTICS = 4;
+	DESTRUCTION = 5;
+}
+
+message Product {
+	string PAN = 1; // Used for the MAP product NFC id
+	string product_address = 2; // Blockchain identity
+	bytes manufacturer_locator_id = 3; // e.g. SKU
+	bytes manufacturer_certification = 4; // hash reference to a documentation set
+}
+
+message ProductIssuance {
+	int64 timestamp = 1;
+	string issuer_address = 2;
+	repeated Product product = 3;
+	bytes issuer_signature = 4;
+	bytes moderator_signature = 5;
+}
+
+message ProductTransfer {
+	int64 timestamp = 1;
+	bytes previous_transfer = 2;
+	string product_address = 3;
+	string next_owner_address = 4;
+	bytes owner_public_key = 5;
+	bytes owner_signature = 6;
+}
+
+message ProductEvent {
+	int64 timestamp = 1;
+	ProductEventType action = 2;
+	bytes product_state_ref = 3; // hash ref to last transfer
+	string operator_address = 4;
+	bytes operator_certification = 5; // hash of docset
+	bytes operator_signature = 6;
+}

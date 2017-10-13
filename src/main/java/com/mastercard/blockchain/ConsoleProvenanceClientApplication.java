@@ -210,7 +210,7 @@ public class ConsoleProvenanceClientApplication {
                 paxmMessage.writeTo(baos);
                 String encoded = encode(baos.toByteArray(), ENCODING);
                 RequestMap request = new RequestMap();
-                request.put("app", APP_ID);
+                request.put("app", appId);
                 request.put("encoding", ENCODING);
                 request.put("value", encoded);
                 TransactionEntry response = TransactionEntry.create(request);
@@ -306,7 +306,7 @@ public class ConsoleProvenanceClientApplication {
             paxmMessage.writeTo(baos);
             String encoded = encode(baos.toByteArray(), ENCODING);
             RequestMap request = new RequestMap();
-            request.put("app", APP_ID);
+            request.put("app", appId);
             request.put("encoding", ENCODING);
             request.put("value", encoded);
             TransactionEntry response = TransactionEntry.create(request);
@@ -370,7 +370,7 @@ public class ConsoleProvenanceClientApplication {
         try {
             RequestMap map = new RequestMap();
             map.set("network", "Z0NE");
-            map.set("application.name", APP_ID);
+            map.set("application.name", appId);
             map.set("application.description", "");
             map.set("application.version", 0);
             map.set("application.definition.format", "proto3");

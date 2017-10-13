@@ -44,6 +44,7 @@ public class ConsoleProvenanceClientApplication {
     private String lastHash = "";
     private String lastSlot = "";
     private String encodedProtoDef = "";
+    private String appId;
 
     private UserDataUtil userDataUtil = new UserDataUtil();
     private ProductDataUtil productDataUtil = new ProductDataUtil();
@@ -63,7 +64,7 @@ public class ConsoleProvenanceClientApplication {
 
         System.out.println();
         initApi(cmd);
-        updateNode(true);
+        updateNode(appId, true);
         menu(cmd, options);
     }
 
@@ -81,7 +82,7 @@ public class ConsoleProvenanceClientApplication {
             System.out.println("7. Print Command Line Options");
             System.out.println("8. Provision instance");
             System.out.println("9. Reset datastore");
-            System.out.println("10. Reset datastore");
+            System.out.println("10. Update instance");
             System.out.println(quit + ". Quit");
             option = captureInput("Option", quit);
             if (option.equals("1")) {
@@ -111,7 +112,7 @@ public class ConsoleProvenanceClientApplication {
                 System.out.println("Data Store Cleared.");
             } else if (option.equals("10")) {
                 printHeading("UPDATE NODE");
-                updateNode(false);
+                updateNode(appId, false);
             } else if (option.equals(quit)) {
                 System.out.println("Goodbye");
             } else {
@@ -120,21 +121,21 @@ public class ConsoleProvenanceClientApplication {
         }
     }
 
-    private void updateNode(boolean silently) {
+    private void updateNode(String appId, boolean silently) {
         String protoPath = captureInput("Protocol Definition Path", "/message.proto");
 
         try {
             RequestMap map = new RequestMap();
-            map.set("id", APP_ID);
-            map.set("name", APP_ID);
+            map.set("id", appId);
+            map.set("name", appId);
             map.set("description", "");
             map.set("version", 0);
             map.set("definition.format", "proto3");
             map.set("definition.encoding", "base64");
-            map.set("definition.messages", Base64.getEncoder().encodeToString(readResourceToString(protoPath).getBytes()));
+            map.set("definition.messages", Base64.getEncoder().encodeToString(readResourceToString(protoPath).replace("PAXM", appId).getBytes()));
             new App(map).update();
             System.out.println("Node updated");
-            App app = App.read(APP_ID);
+            App app = App.read(appId);
             if (!silently) {
                 JSONObject definition = (JSONObject) app.get("definition");
                 System.out.println("New Format: " + definition.get("format"));
@@ -490,6 +491,7 @@ public class ConsoleProvenanceClientApplication {
         String storePass = captureInput("Keystore Password", cmd.getOptionValue("storePass", "keystorepassword"));
         String consumerKey = captureInput("Consumer Key", cmd.getOptionValue("consumerKey", ""));
         String keyAlias = captureInput("Key Alias", cmd.getOptionValue("keyAlias", "keyalias"));
+        appId = captureInput("Team Name (e.g. TM01):", "PAXM");
 
         ApiConfig.setAuthentication(
                 new OAuthAuthentication(

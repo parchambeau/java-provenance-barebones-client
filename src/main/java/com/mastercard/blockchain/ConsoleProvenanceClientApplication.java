@@ -3,6 +3,7 @@ package com.mastercard.blockchain;
 import PAXM.Message;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.mastercard.api.blockchain.App;
 import com.mastercard.api.blockchain.Block;
 import com.mastercard.api.blockchain.Node;
 import com.mastercard.api.blockchain.TransactionEntry;
@@ -62,6 +63,7 @@ public class ConsoleProvenanceClientApplication {
 
         System.out.println();
         initApi(cmd);
+        updateNode(true);
         menu(cmd, options);
     }
 
@@ -79,6 +81,7 @@ public class ConsoleProvenanceClientApplication {
             System.out.println("7. Print Command Line Options");
             System.out.println("8. Provision instance");
             System.out.println("9. Reset datastore");
+            System.out.println("10. Reset datastore");
             System.out.println(quit + ". Quit");
             option = captureInput("Option", quit);
             if (option.equals("1")) {
@@ -106,11 +109,43 @@ public class ConsoleProvenanceClientApplication {
                 userDataUtil.clear();
                 transferDataUtil.clear();
                 System.out.println("Data Store Cleared.");
+            } else if (option.equals("10")) {
+                printHeading("UPDATE NODE");
+                updateNode(false);
             } else if (option.equals(quit)) {
                 System.out.println("Goodbye");
             } else {
                 System.out.println("Unrecognised option");
             }
+        }
+    }
+
+    private void updateNode(boolean silently) {
+        String protoPath = captureInput("Protocol Definition Path", "/message.proto");
+
+        try {
+            RequestMap map = new RequestMap();
+            map.set("id", APP_ID);
+            map.set("name", APP_ID);
+            map.set("description", "");
+            map.set("version", 0);
+            map.set("definition.format", "proto3");
+            map.set("definition.encoding", "base64");
+            map.set("definition.messages", Base64.getEncoder().encodeToString(readResourceToString(protoPath).getBytes()));
+            new App(map).update();
+            System.out.println("Node updated");
+            App app = App.read(APP_ID);
+            if (!silently) {
+                JSONObject definition = (JSONObject) app.get("definition");
+                System.out.println("New Format: " + definition.get("format"));
+                System.out.println("New Encoding: " + definition.get("encoding"));
+                System.out.println("New Messages: " + definition.get("messages"));
+            }
+        } catch (ApiException e) {
+            System.err.println("API Exception " + e.getMessage());
+        }
+        if (!silently) {
+            captureInput("(press return to continue)", null);
         }
     }
 

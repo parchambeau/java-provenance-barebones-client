@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package PAXM;
 
+option java_package = "PAXM";
+
 message PaxmMessage {
 	MessageType type = 1;
 	bytes payload = 2;

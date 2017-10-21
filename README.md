@@ -29,4 +29,4 @@ Product ownership can be verified by specifying the product and user to verify o
 
 ## Caution
 
-It may be necessary to manually create a node instance on the blockchain if it doesn't get created on the developer portal. This can be done from the app by selecting option 8. 
+It may be necessary to manually create a node instance on the blockchain if it doesn't get created on the developer portal. This can be done from the app by selecting option 8. # java-provenance-barebones-client
